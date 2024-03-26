@@ -1,7 +1,7 @@
 {
   "name": "gcode-cli",
   "version": "1.0.0-alpha",
-  "description": "",
+  "description": "a code generate cli",
   "bin": {
     "gcode": "dist/bundle.js"
   },
@@ -9,8 +9,12 @@
     "build": "rollup -c"
   },
   "keywords": [],
-  "author": "",
+  "author": "kingne",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kingne/gcode-cli"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",
