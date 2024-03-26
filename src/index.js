@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import fs from 'node:fs';
 import { render } from "ejs";
 import { Command } from "commander";
