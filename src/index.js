@@ -24,7 +24,7 @@ const compAction = (name) => {
     log(`start generate ${name}`);
     try {
         const code = generateCode(template, {name});
-        writeFile(`${name}.js`, code);
+        writeFile(`./${name}.js`, code);
         log(`generate success`);
     } catch (error) {
         log(`generate error: ${error}`);
@@ -42,3 +42,5 @@ program
     .command('comp')
     .argument('<name>')
     .action(compAction)
+
+program.parse();
