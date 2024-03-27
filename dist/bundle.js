@@ -7,6 +7,7 @@ var require$$1 = require('path');
 var require$$0$1 = require('events');
 var require$$1$1 = require('child_process');
 var require$$4 = require('process');
+var path$1 = require('node:path');
 
 var ejs = {};
 
@@ -2356,7 +2357,7 @@ const EventEmitter = require$$0$1.EventEmitter;
 const childProcess = require$$1$1;
 const path = require$$1;
 const fs = require$$0;
-const process = require$$4;
+const process$1 = require$$4;
 
 const { Argument: Argument$2, humanReadableArgName } = argument;
 const { CommanderError: CommanderError$2 } = error;
@@ -2412,10 +2413,10 @@ let Command$2 = class Command extends EventEmitter {
 
     // see .configureOutput() for docs
     this._outputConfiguration = {
-      writeOut: (str) => process.stdout.write(str),
-      writeErr: (str) => process.stderr.write(str),
-      getOutHelpWidth: () => process.stdout.isTTY ? process.stdout.columns : undefined,
-      getErrHelpWidth: () => process.stderr.isTTY ? process.stderr.columns : undefined,
+      writeOut: (str) => process$1.stdout.write(str),
+      writeErr: (str) => process$1.stderr.write(str),
+      getOutHelpWidth: () => process$1.stdout.isTTY ? process$1.stdout.columns : undefined,
+      getErrHelpWidth: () => process$1.stderr.isTTY ? process$1.stderr.columns : undefined,
       outputError: (str, write) => write(str)
     };
 
@@ -2842,7 +2843,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
       this._exitCallback(new CommanderError$2(exitCode, code, message));
       // Expecting this line is not reached.
     }
-    process.exit(exitCode);
+    process$1.exit(exitCode);
   }
 
   /**
@@ -3280,9 +3281,9 @@ Expecting one of '${allowedValues.join("', '")}'`);
 
     // Default to using process.argv
     if (argv === undefined) {
-      argv = process.argv;
+      argv = process$1.argv;
       // @ts-ignore: unknown property
-      if (process.versions && process.versions.electron) {
+      if (process$1.versions && process$1.versions.electron) {
         parseOptions.from = 'electron';
       }
     }
@@ -3298,7 +3299,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
         break;
       case 'electron':
         // @ts-ignore: unknown property
-        if (process.defaultApp) {
+        if (process$1.defaultApp) {
           this._scriptPath = argv[1];
           userArgs = argv.slice(2);
         } else {
@@ -3429,28 +3430,28 @@ Expecting one of '${allowedValues.join("', '")}'`);
     launchWithNode = sourceExt.includes(path.extname(executableFile));
 
     let proc;
-    if (process.platform !== 'win32') {
+    if (process$1.platform !== 'win32') {
       if (launchWithNode) {
         args.unshift(executableFile);
         // add executable arguments to spawn
-        args = incrementNodeInspectorPort(process.execArgv).concat(args);
+        args = incrementNodeInspectorPort(process$1.execArgv).concat(args);
 
-        proc = childProcess.spawn(process.argv[0], args, { stdio: 'inherit' });
+        proc = childProcess.spawn(process$1.argv[0], args, { stdio: 'inherit' });
       } else {
         proc = childProcess.spawn(executableFile, args, { stdio: 'inherit' });
       }
     } else {
       args.unshift(executableFile);
       // add executable arguments to spawn
-      args = incrementNodeInspectorPort(process.execArgv).concat(args);
-      proc = childProcess.spawn(process.execPath, args, { stdio: 'inherit' });
+      args = incrementNodeInspectorPort(process$1.execArgv).concat(args);
+      proc = childProcess.spawn(process$1.execPath, args, { stdio: 'inherit' });
     }
 
     if (!proc.killed) { // testing mainly to avoid leak warnings during unit tests with mocked spawn
       const signals = ['SIGUSR1', 'SIGUSR2', 'SIGTERM', 'SIGINT', 'SIGHUP'];
       signals.forEach((signal) => {
         // @ts-ignore
-        process.on(signal, () => {
+        process$1.on(signal, () => {
           if (proc.killed === false && proc.exitCode === null) {
             proc.kill(signal);
           }
@@ -3463,7 +3464,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
     proc.on('close', (code, _signal) => {
       code = code ?? 1; // code is null if spawned process terminated due to a signal
       if (!exitCallback) {
-        process.exit(code);
+        process$1.exit(code);
       } else {
         exitCallback(new CommanderError$2(code, 'commander.executeSubCommandAsync', '(close)'));
       }
@@ -3484,7 +3485,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
         throw new Error(`'${executableFile}' not executable`);
       }
       if (!exitCallback) {
-        process.exit(1);
+        process$1.exit(1);
       } else {
         const wrappedError = new CommanderError$2(1, 'commander.executeSubCommandAsync', '(error)');
         wrappedError.nestedError = err;
@@ -4043,13 +4044,13 @@ Expecting one of '${allowedValues.join("', '")}'`);
    */
   _parseOptionsEnv() {
     this.options.forEach((option) => {
-      if (option.envVar && option.envVar in process.env) {
+      if (option.envVar && option.envVar in process$1.env) {
         const optionKey = option.attributeName();
         // Priority check. Do not overwrite cli or options from unknown source (client-code).
         if (this.getOptionValue(optionKey) === undefined || ['default', 'config', 'env'].includes(this.getOptionValueSource(optionKey))) {
           if (option.required || option.optional) { // option can take a value
             // keep very simple, optional always takes value
-            this.emit(`optionEnv:${option.name()}`, process.env[option.envVar]);
+            this.emit(`optionEnv:${option.name()}`, process$1.env[option.envVar]);
           } else { // boolean
             // keep very simple, only care that envVar defined and not the value
             this.emit(`optionEnv:${option.name()}`);
@@ -4543,7 +4544,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
 
   help(contextOptions) {
     this.outputHelp(contextOptions);
-    let exitCode = process.exitCode || 0;
+    let exitCode = process$1.exitCode || 0;
     if (exitCode === 0 && contextOptions && typeof contextOptions !== 'function' && contextOptions.error) {
       exitCode = 1;
     }
@@ -4690,13 +4691,23 @@ const {
   Help
 } = commander;
 
-const template = `
-function <%= name %>() {
-    return '<%= name %>'
-}
-`.trim();
-
 const log = console.log;
+
+const srcDir = __dirname;
+const targetDir = process.cwd();
+
+const tempateSrcDir = path$1.resolve(srcDir, '../template');
+
+const getTemplate = (src, name) => {
+    const filePath = path$1.resolve(src, name);
+    return fs$1.readFileSync(filePath, 'utf-8').trim();
+};
+
+const isEmptyDir = (dirPath) => {
+    if (!fs$1.existsSync(dirPath)) return false;
+    const files = fs$1.readdirSync(dirPath);
+    return files.length === 0 || (files.length === 1 && files[0] === '.git');
+};
 
 const generateCode = (template, data) => {
     return ejs.render(template, data);
@@ -4706,17 +4717,24 @@ const writeFile = (path, data) => {
     return fs$1.writeFileSync(path, data);
 };
 
-const compAction = (name) => {
-    log(`start generate ${name}`);
+const writeTemplateToFile = (filePath, template, data) => {
     try {
-        const code = generateCode(template, {name});
-        writeFile(`./${name}.js`, code);
+        const code = generateCode(template, data);
+        writeFile(filePath, code);
         log(`generate success`);
     } catch (error) {
         log(`generate error: ${error}`);
     } finally {
         log(`generate finished`);
     }
+};
+
+const compAction = (name) => {
+    fs$1.mkdirSync(path$1.resolve(targetDir, `${name}`));
+    const tsxTempate = getTemplate(tempateSrcDir, 'react.comp.ejs');
+    writeTemplateToFile(path$1.resolve(targetDir, `${name}/index.tsx`), tsxTempate, {name});
+    const scssTemplate = getTemplate(tempateSrcDir, 'scss.comp.ejs');
+    writeTemplateToFile(path$1.resolve(targetDir, `${name}/index.module.scss`), scssTemplate, {name});
 };
 
 const program = new Command();
@@ -4730,3 +4748,5 @@ program
     .action(compAction);
 
 program.parse();
+
+exports.isEmptyDir = isEmptyDir;

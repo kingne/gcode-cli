@@ -1,0 +1,13 @@
+import styles from './index.module.scss';
+
+export interface <%= name %>Props {
+
+}
+
+const <%= name %>: React.FC<<%= name %>Props> = () => {
+    return (
+        <div className={styles['<%= name.toLowerCase() %>']} >
+            <%= name %>
+        </div>
+    )
+}
